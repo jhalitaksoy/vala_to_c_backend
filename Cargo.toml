@@ -10,3 +10,4 @@ edition = "2018"
 rocket = "0.4.7"
 rocket_cors = "0.5.1"
 serde = { version = "1.0.124", features = ["derive"] }
+rocket_contrib = "0.4.7"

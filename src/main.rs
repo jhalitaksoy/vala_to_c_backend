@@ -4,9 +4,11 @@
 extern crate rocket;
 
 use rocket::http::Method;
+use rocket_contrib::json::Json;
 use rocket_cors::AllowedHeaders;
 use rocket_cors::AllowedOrigins;
 use rocket_cors::CorsOptions;
+use serde::Serialize;
 use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
@@ -14,38 +16,24 @@ use std::path::Path;
 use std::process::Command;
 use std::str;
 use std::time::{SystemTime, UNIX_EPOCH};
-use serde::{Serialize};
 
 #[get("/")]
 fn index() -> &'static str {
     "Hello, world!"
 }
 
-#[derive(Responder)]
-enum MyResult {
-    #[response(status = 200)]
-    Ok(String),
-    #[response(status = 409)]
-    Err(String),
-}
-
 #[derive(Serialize)]
-struct CompilerOutput{
-    c_code : String,
-    stdout : String,
-    stderr : String,
-    has_error : bool,
+struct CompileResult {
+    c_code: String,
+    stdout: String,
+    stderr: String,
+    has_error: bool,
 }
 
 #[post("/vala_to_c", data = "<valacode>")]
-fn vala_to_c(valacode: String) -> MyResult {
-    let result = run_valac(valacode);
-    if result.has_error {
-        println!("Error **** {}", result.error);
-        return MyResult::Err(result.error.to_string());
-    } else {
-        return MyResult::Ok(result.value.to_string());
-    }
+fn vala_to_c(valacode: String) -> Json<CompileResult> {
+    let compile_result = run_valac(valacode);
+    return Json(compile_result);
 }
 
 fn main() {
@@ -70,13 +58,7 @@ fn main() {
         .launch();
 }
 
-struct OperationResult {
-    value: String,
-    error: String,
-    has_error: bool,
-}
-
-fn run_valac(vala_code: String) -> OperationResult {
+fn run_valac(vala_code: String) -> CompileResult {
     let start = SystemTime::now();
     let since_the_epoch = start
         .duration_since(UNIX_EPOCH)
@@ -125,20 +107,20 @@ fn run_valac(vala_code: String) -> OperationResult {
 
     let file_name_c = String::from(time.to_string() + ".c");
 
-    let mut result = OperationResult {
-        value: "".to_string(),
-        error: "".to_string(),
-        has_error: false,
+    let mut result = CompileResult {
+        c_code: "".to_string(),
+        stdout: stdout_text,
+        stderr: stderr_text,
+        has_error: true,
     };
 
     match fs::read_to_string(file_name_c.clone()) {
         Ok(c_code) => {
-            result.value = c_code;
+            result.c_code = c_code;
             result.has_error = false;
         }
         Err(e) => {
             println!("{}", e);
-            result.error = format!("{} \n {}", stdout_text, stderr_text);
             result.has_error = true;
         }
     };
