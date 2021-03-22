@@ -5,7 +5,7 @@ use rocket_cors::CorsOptions;
 
 pub fn get_cors_options() -> CorsOptions {
     let allowed_origins =
-        AllowedOrigins::some_exact(&["https://hoppscotch.io", "http://localhost:5000"]);
+        AllowedOrigins::some_exact(&["https://hoppscotch.io", "http://localhost:5000", "https://vala-to-c.vercel.app/"]);
 
     // You can also deserialize this
     let cors_options = CorsOptions {
