@@ -50,6 +50,7 @@ fn create_vala_file_and_write(file_name: &String, vala_code: &String) {
 fn run_valac_command(file_name_vala : &String, file_name_c : &String) -> CompileResult{
     let mut command = Command::new("valac");
     command.arg("-C").arg(file_name_vala);
+    //todo: check valac is installed
     let output = command.output().expect("failed to execute process");
 
     let mut compile_result = CompileResult {
