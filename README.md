@@ -13,6 +13,6 @@ Using [Rust](https://www.rust-lang.org) and [Rocket](https://rocket.rs/) Web Fra
 - [Vala Complier](https://wiki.gnome.org/Projects/Vala)
 
 ## How to start
-```shell 
+```bash 
 cargo install
 cargo run
