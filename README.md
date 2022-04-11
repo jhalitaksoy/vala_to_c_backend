@@ -14,5 +14,5 @@ Using [Rust](https://www.rust-lang.org) and [Rocket](https://rocket.rs/) Web Fra
 
 ## How to start
 ```bash 
-cargo install
+cargo install --path .
 cargo run
